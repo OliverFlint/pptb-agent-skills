@@ -70,7 +70,7 @@ The `pptb-tool-dev` skill scaffolds via `generator-pptb` (`yo pptb`) only. `Powe
 
 The `intake-policy-review` skill reviews existing tools against live policies and repository evidence. Its assessment does not replace marketplace maintainer approval or real-environment human testing.
 
-The `tool-verification` skill targets the Verified maturity review after marketplace intake. It checks every required and optional criterion, but cannot grant verification or reviewer waivers. A repository URL starts the assessment; private marketplace data and live PPTB behavior may need additional evidence.
+The `tool-verification` skill targets the Verified maturity review after marketplace intake. It checks every required and optional criterion and ends with a web-form response list: one item per criterion marked ✅, ❌ or ❔ with a self-contained explanation. It cannot grant verification or reviewer waivers. A repository URL starts the assessment; private marketplace data and live PPTB behavior may need additional evidence.
 
 ## Contents
 
@@ -82,7 +82,7 @@ tool-verification/
 ├── SKILL.md                   # repository URL to Verified readiness assessment
 └── references/
     ├── checklist.md           # evidence workflow for all maturity criteria
-    └── reviewer-response.md   # reviewer decision guidance and response templates
+    └── reviewer-response.md   # per-check web-form response guidance and template
 tool-dev/
 ├── SKILL.md                   # shared Claude + Copilot + Codex entry point
 └── references/

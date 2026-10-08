@@ -1,62 +1,58 @@
-# Reviewer response guidance and templates
+# Reviewer web-form responses
 
-Use this reference after completing the assessment. Append the tailored response at the end of the report so the reviewer can act on the findings without composing a message from the checklist.
+Append a **Reviewer response** section at the end of every report. The reviewer uses a web form with a separate response text box for each check. Produce a simple list with one item per current required and optional criterion, including passes; each explanation must stand alone when copied into its text box. Use the current policy's criterion names and order, reconciling the template below with the live [maturity model](https://docs.powerplatformtoolbox.com/tool-development/maturity-model).
 
-The [current maturity model](https://docs.powerplatformtoolbox.com/tool-development/maturity-model) governs the decision and request process. Confirm the live policy before using process wording below.
+## Status and wording
 
-## Select and prepare the response
+| Report status | Prefix | Response content |
+| --- | --- | --- |
+| Pass | ✅ | State what was checked and the concrete passing evidence. Preserve scope qualifiers such as static inspection. |
+| Not applicable | ✅ | Explicitly say "Not applicable" and explain the inspected evidence that justifies it. |
+| Fail | ❌ | Describe the confirmed issue, affected version/file/component where useful, and the action to resolve it. |
+| Needs evidence | ❔ | State what remains unverified, why, and the evidence or test needed. Do not describe an unperformed check as a tool defect. |
+| Needs Manual Validation | ❔ | High/critical findings are confined to build/development dependencies. Begin the explanation with "Needs Manual Validation" and identify the scope, findings and human review needed. |
+| Reviewer judgment | ❔ | Explain the flag or soft gate, supporting evidence, and the decision reserved for the human reviewer. |
 
-- **Not ready:** Draft a rejection identifying every confirmed failed required criterion and the action to resolve it. Where required checks are incomplete, put a reviewer-only note before the draft explaining that those checks must be completed and the findings updated before sending a final decision.
-- **Ready to request verification:** Draft a proposed approval for a human reviewer to adopt after completing the official review. An agent readiness assessment is not an approval, and the template must not claim the badge has already been applied.
-- **Needs reviewer judgment:** State the unresolved migration exception, bug-health flag, or usage waiver in a reviewer-only note. Leave it for the human reviewer to decide before choosing an approval/rejection draft; if no decision is available, use the incomplete-review template.
-- **Incomplete assessment:** Provide a holding draft explaining that the assessment cannot establish an outcome yet. Label it as a draft for an incomplete review, not an official approval/rejection or an additional policy stage. Identify who should perform each remaining check without inventing a reviewer back-and-forth process.
+Start each item with the icon, criterion name and requirement level, followed by one concise paragraph. Use enough detail to explain the issue clearly; do not compress away distinct high/critical audit findings just to fit one line. Include all three usage metrics within the single usage criterion. Do not create separate items for each metric when the form has one combined check.
 
-Use the actual tool name and assessed published version. Replace all template placeholders and omit inapplicable paragraphs. Keep each issue bullet to one line where practical. Address the author respectfully and focus on criteria, evidence, and fixes; do not infer poor maintenance or lack of human testing from unavailable evidence.
+Within the CVE response, distinguish affected **direct dependencies** from **transitive (child) dependencies**, naming the direct introducer/path for child findings and separately stating runtime or development/build scope. Explain whether remediation means updating a declared dependency or refreshing/updating its child resolution. Both groups belong in the same CVE text-box item. When high/critical findings are confined to build/development dependencies, use ❔ and explicitly say **Needs Manual Validation**, describing the applicability/exposure review and remediation options. Confirmed runtime high/critical findings use ❌; mixed cases also use ❌, with build findings separately described as needing manual validation. Uncertain scope uses ❔ pending evidence. Retain the full audit and do not claim that build findings are exempt, resolved or approved before the human decision.
 
-Keep confirmed failures separate from reviewer follow-up. In particular:
+Label optional checks **Optional**. An observed optional failure still uses ❌, with an explicit statement that it does not block approval. Keep submission prerequisites and any overall recommendation in a short reviewer-only note before the list; do not mix them into criterion text boxes or invent form fields.
 
-- Lack of a live host session means the agent has not tested the theme; it does not establish a theme failure.
-- An outdated validator or reviewer network failure is a tooling limitation, not a proven tool defect.
-- An unverified owner's My Tools access is an administrative check, not a failed tool-quality criterion.
-- Optional contrast/console findings may be included separately as improvements; they do not cause rejection.
-- If usage thresholds are demonstrably unmet, state that finding and the applicable waiver possibility. Do not award the waiver or imply the author must wait for adoption when the live policy permits discretion.
+Avoid email subjects, salutations, closing paragraphs, rejection/approval letters and cross-references such as "see above". Include brief evidence directly in each response; URLs may be included when useful, but the text must remain intelligible without opening another report section. Mention the assessed tool/version when an item could otherwise confuse source and shipped-artifact findings.
 
-## Rejection draft
+Where required checks or decisions remain unresolved, the reviewer-only note must say the draft needs completion before an official outcome. A readiness assessment cannot grant a badge, waive a requirement, or establish that a request was submitted. Draft only; do not enter or submit the web form without separate user authorization.
 
-**Subject: [Tool name] — verification outcome**
+Preserve these distinctions:
 
-Thanks for submitting [Tool name] [published version] for verification. This version has not been approved because the following required criteria need addressing:
+- Unavailable live host access means ❔ for untested theme behavior, not ❌.
+- An outdated validator or network error means ❔ for unavailable validation evidence, not a proven tool defect.
+- An unverified owner's My Tools access is a prerequisite note, not a failed quality criterion.
+- Deprecated-but-supported APIs with a demonstrated migration and flagged bug-health thresholds use ❔ pending reviewer judgment, rather than automatic rejection.
+- Usage shortfalls require accurate metrics and the applicable waiver possibility. An unresolved waiver uses ❔; do not award it or let it hide other failures. Use ❌ for a confirmed failure with no applicable or granted exception, preserving any recorded human decision.
 
-- **[Criterion]:** [Observed failure and concrete action needed.]
+## Per-criterion template
 
-[If usage is unmet and a waiver has not been granted: State the observed metrics, which thresholds are unmet, and that a reviewer may consider the applicable waiver for a new tool when the other criteria meet a high standard. Do not promise a waiver.]
+Replace each `[icon]` with exactly one of ✅, ❌ or ❔ and replace all bracketed guidance with evidence from the review. These are baseline criteria, not fixed web-form field identifiers; add or rename entries if the live policy changes.
 
-[If useful: Briefly acknowledge material checks that passed, naming only demonstrated results.]
+- [icon] **README quality (Required):** [Purpose, screenshot/GIF and installation/run findings; describe any missing onboarding step and remedy.]
+- [icon] **CSP exceptions documented (Required):** [Exceptions and their necessity/justification, or explicit not-applicable finding after manifest/network inspection.]
+- [icon] **No critical or high CVEs (Required):** [Full audit identity/result; separate direct and transitive high/critical packages with versions, child introducers/paths and fixes; state runtime/build scope and source/release differences. For build-only findings use ❔ and "Needs Manual Validation"; for confirmed runtime findings use ❌.]
+- [icon] **No deprecated PPTB APIs or unsupported methods (Required):** [Used API support, removed/unsupported calls, or migration evidence and unresolved reviewer decision.]
+- [icon] **Reacts to the PPTB app theme (Required):** [Observed initial light/dark behavior, switching and legibility; identify live testing still needed.]
+- [icon] **Has an icon (Required):** [Top-level icon path, released SVG presence and validity/rendering evidence, or concrete packaging defect.]
+- [icon] **Basic colour contrast (Optional):** [Observed text/control contrast in both themes or missing visual evidence; optional failures do not block approval.]
+- [icon] **No console errors on load (Optional):** [Actual PPTB load-console result or missing capture; distinguish warnings and non-blocking errors.]
+- [icon] **Version 1.0.0 or greater (Required):** [Actual published version and source, or the needed release.]
+- [icon] **Healthy bug response (Required):** [Complete bug inventory and first-response timing; explain any threshold flag/blocker and remedy.]
+- [icon] **Active contributor (Required):** [Named accountable contributor, reachable channel and dated human activity, or missing ownership evidence.]
+- [icon] **Up to date with breaking changes (Required):** [Applicable migrations and compatibility evidence; identify a proven unresolved change or missing check.]
+- [icon] **Meets 2 of 3 usage metrics (Required):** [MAU, downloads and qualifying app ratings with dated provenance; combined result and any pending waiver decision.]
 
-Once the required issues are addressed, publish and test the corrected version and submit a new verification request. You can resubmit immediately after fixing the issues; the new request receives a full review.
+## Wording examples
 
-## Proposed approval draft
+- ✅ **Has an icon (Required):** The published archive contains `dist/icon.svg`, referenced by the top-level `icon` field; it parses and renders as SVG.
+- ❌ **README quality (Required):** The README explains the tool and includes a screenshot, but omits installation and launch instructions. Add the steps needed to install the tool, select a connection and start using it.
+- ❔ **Reacts to the PPTB app theme (Required):** Source handles the initial host theme and theme updates, but live light/dark switching and legibility have not been tested. Complete these checks in PPTB on the reviewed release and record the host version and results.
 
-**Subject: [Tool name] — verification outcome**
-
-Thanks for submitting [Tool name] [published version] for verification. The review is complete, and this version is approved for Verified status.
-
-[Only if a human reviewer explicitly granted an exception: State the recorded usage waiver or migration/bug-health decision accurately and concisely.]
-
-[If applicable: List optional improvements separately and state that they do not affect this approval.]
-
-Keep the tool aligned with the current maintenance requirements. Future dependency vulnerabilities, CSP additions, bug-health breaches, or unresolved PPTB breaking changes can affect the badge.
-
-**Reviewer-only instruction:** This is proposed wording, not evidence of approval. Use it only after the authorized human reviewer has completed the review and made the approval decision. Do not state that the badge was applied unless that action is verified.
-
-## Incomplete-review draft
-
-**Subject: [Tool name] — verification assessment incomplete**
-
-The assessment of [Tool name] [published version] is incomplete. No final verification decision has been made because the following required checks remain unresolved:
-
-- **[Check]:** [Missing evidence or decision, who must resolve it, and the next action.]
-
-[If any failures are already confirmed: List those separately as confirmed issues; do not obscure them behind the missing evidence.]
-
-Complete these checks and record any discretionary decisions before issuing the final verification outcome. This draft does not grant Verified status or create a new stage in the official review process.
+- ❔ **No critical or high CVEs (Required):** Needs Manual Validation — the full audit finds high vulnerabilities in the build tree: direct Vite and transitive PostCSS via Vite. Inspect the advisory applicability and build-process exposure, review patched parent/child resolutions and record the human decision. No runtime high/critical findings were identified; the full audit remains unresolved.

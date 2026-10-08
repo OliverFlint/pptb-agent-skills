@@ -31,6 +31,19 @@ Sources: [manifest CSP format](https://docs.powerplatformtoolbox.com/tool-develo
 
 Pass only when the audit establishes no high or critical vulnerabilities. Use the full audit evidence described in SKILL.md. List high/critical findings individually with affected package, installed version, advisory, dependency path, and a feasible remediation. Lower severities are additional findings. An empty or missing lockfile, old CI badge, failed audit request, or clean production-only audit cannot establish the full dependency tree is clean. Note differences between the candidate release's dependencies and the current branch.
 
+Distinguish **direct** dependencies declared by the reviewed tool's manifest from **transitive (child)** dependencies brought in by another package. Cross-check audit `isDirect` with the relevant manifest, lockfile and `npm ls <package>` or `npm explain <package>`; do not equate a hoisted `node_modules/<package>` path with a direct declaration. In workspaces, classify relative to the reviewed tool and identify dependencies introduced by shared workspace tooling separately.
+
+Report dependency relationship and scope as separate dimensions: a direct dependency can be development-only, and a transitive dependency can be shipped at runtime. Show multiple affected versions/paths and both runtime/build paths where relevant; label a package **Direct and transitive** if it has both relationships. Keep source and released-tree classifications separate when they differ.
+
+Use a vulnerability table with these columns:
+
+| Package / installed version | Severity / advisory | Relationship | Runtime / build scope | Direct introducer and dependency path | Remediation |
+| --- | --- | --- | --- | --- | --- |
+
+For a direct finding, identify the declared dependency to update. For a child finding, identify the direct dependency whose upgrade or refreshed resolution can bring in a patched child, retaining the complete path (for example, `vite → postcss → source-map-js`). Do not suggest adding a child as a new direct dependency as the default fix. Consider a tested override only where a compatible parent/resolution update is unavailable; do not apply it during an assessment.
+
+Summarize affected direct and transitive packages separately, without double-counting shared children or multiple advisory records as additional packages. If an audit entry is high only because its `via` references another vulnerable package, distinguish that propagated finding from an advisory against the parent itself. For high/critical findings confined to build/development dependencies, report **Needs Manual Validation** (❔). Retain every finding and have the human reviewer assess actual scope, advisory applicability, build-process exposure and remediation. A devDependencies declaration or clean production-only audit alone does not prove build-only scope: check dependency paths and shipped artifacts. If scope is uncertain, use ❔ and request evidence. Confirmed runtime high/critical findings use **Fail** (❌); in mixed cases the criterion remains ❌ while build findings are identified as needing manual validation. This is the skill's reporting convention, not a claimed official exemption from the full-tree requirement. Do not mark the criterion passed or the tool ready while manual validation is pending; record the reviewer's decision and rationale.
+
 ### R4. PPTB API support
 
 Inventory host API calls, including wrappers, aliases, computed access, and shared code. Compare each used method/signature with the current [API reference](https://docs.powerplatformtoolbox.com/tool-development/api-reference), relevant host release notes, and supported minimum host version. Do not rely on stale type declarations as the sole authority.
