@@ -1,6 +1,6 @@
 ---
 name: intake-policy-review
-description: Review a Power Platform ToolBox (PPTB) tool or repository against the current PPTB marketplace and AI-assisted-development policies. Use when the user provides a PPTB GitHub repository, tool folder, README, or asks whether a PPTB tool is ready for marketplace intake/verification.
+description: Review a Power Platform ToolBox (PPTB) tool or repository against the current PPTB marketplace and AI-assisted-development policies. Use when the user provides a PPTB GitHub repository, tool folder, README, or asks whether a PPTB tool is ready for marketplace intake or policy compliance.
 ---
 
 # PPTB Marketplace Policy Intake Review

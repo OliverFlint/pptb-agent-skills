@@ -12,6 +12,7 @@ Available skills:
 
 - **[pptb-tool-dev](tool-dev/SKILL.md)** — scaffold, fix, debug, validate, and publish PPTB tools, including API calls and inter-tool or agent integration.
 - **[intake-policy-review](intake-policy-review/SKILL.md)** — review a PPTB tool or repository against current marketplace and AI-assisted-development policies, with evidence-based findings and prioritized pre-submission changes.
+- **[tool-verification](tool-verification/SKILL.md)** — check a tool repository URL against every current Verified badge criterion, including dependencies, UI, maintenance, and marketplace usage; distinguish failures, missing evidence, and reviewer exceptions.
 
 Once the skills are deployed (see [Deploying](#deploying)), just ask your agent naturally — the `description` in each `SKILL.md` is what triggers it. Example prompts and what the agent should do in response:
 
@@ -20,6 +21,7 @@ Once the skills are deployed (see [Deploying](#deploying)), just ask your agent 
 - _"Make my tool launchable from another PPTB tool"_ → reads `tool-dev/references/invocation.md` and wires up `launchTool`/`getLaunchContext`/`returnData`, without re-scaffolding anything.
 - _"Expose my tool to an agent via MCP"_ → reads `tool-dev/references/agent-integration.md` and adds the `agents` block + `invokeHeadless` entry point.
 - _"Review this PPTB repository for marketplace intake readiness"_ → verifies the current policy pages, inspects the README, manifest, source, and testing evidence, then reports findings and a readiness verdict using `intake-policy-review`.
+- _"Check https://github.com/my-org/my-tool against all PPTB verification requirements"_ → uses `tool-verification` to inspect the candidate release, source, issues, and available marketplace evidence, then reports every required and optional criterion with fixes and evidence gaps.
 
 ## Prerequisites
 
@@ -27,6 +29,7 @@ Once the skills are deployed (see [Deploying](#deploying)), just ask your agent 
 - **PPTB desktop app** installed locally if you want to exercise the Step 5 debug loop (`dev-watch` → Load Local Tool) — not required just to scaffold or validate a tool.
 - **Claude Code / Cowork**, **GitHub Copilot**, or **OpenAI Codex** with project or repo skills enabled, so the deployed `SKILL.md` actually gets picked up.
 - **Policy and repository access** for `intake-policy-review` — the agent must be able to read the current public policy pages and the tool's source files. Node.js/npm is needed if it runs validation or dependency-audit commands; the PPTB desktop app is needed for real-environment testing.
+- **Verification evidence access** for `tool-verification` — repository files, issue/comment history, releases, and current maturity/API docs. Node.js/npm supports audit and validation; PPTB supports runtime checks. Marketplace usage, ratings, and ownership may require dated owner-provided evidence. Missing access produces explicit evidence gaps rather than assumed passes.
 
 ## Deploying
 
@@ -35,6 +38,7 @@ Once the skills are deployed (see [Deploying](#deploying)), just ask your agent 
 ```sh
 cp -r tool-dev/ <project>/.claude/skills/pptb-tool-dev/
 cp -r intake-policy-review/ <project>/.claude/skills/intake-policy-review/
+cp -r tool-verification/ <project>/.claude/skills/tool-verification/
 ```
 
 **GitHub Copilot** (VS Code, Copilot CLI, Copilot cloud agent):
@@ -42,6 +46,7 @@ cp -r intake-policy-review/ <project>/.claude/skills/intake-policy-review/
 ```sh
 cp -r tool-dev/ <repo>/.github/skills/pptb-tool-dev/
 cp -r intake-policy-review/ <repo>/.github/skills/intake-policy-review/
+cp -r tool-verification/ <repo>/.github/skills/tool-verification/
 ```
 
 **OpenAI Codex** (repository skills):
@@ -50,9 +55,10 @@ cp -r intake-policy-review/ <repo>/.github/skills/intake-policy-review/
 mkdir -p <repo>/.agents/skills
 cp -r tool-dev/ <repo>/.agents/skills/pptb-tool-dev/
 cp -r intake-policy-review/ <repo>/.agents/skills/intake-policy-review/
+cp -r tool-verification/ <repo>/.agents/skills/tool-verification/
 ```
 
-Copy either or both skills. Each skill uses the same folder and `SKILL.md` for all three agents, read directly from their respective skill locations. The copy commands above use POSIX shell syntax (for example, Bash or Git Bash).
+Copy whichever skills you need, including each skill's `references/` directory when present. Each skill uses the same folder and `SKILL.md` for all three agents, read directly from their respective skill locations. The copy commands above use POSIX shell syntax (for example, Bash or Git Bash).
 
 ## Using this in the tool generator
 
@@ -64,12 +70,19 @@ The `pptb-tool-dev` skill scaffolds via `generator-pptb` (`yo pptb`) only. `Powe
 
 The `intake-policy-review` skill reviews existing tools against live policies and repository evidence. Its assessment does not replace marketplace maintainer approval or real-environment human testing.
 
+The `tool-verification` skill targets the Verified maturity review after marketplace intake. It checks every required and optional criterion, but cannot grant verification or reviewer waivers. A repository URL starts the assessment; private marketplace data and live PPTB behavior may need additional evidence.
+
 ## Contents
 
 ```
 AGENTS.md                     # conventions for agents working in this repo
 intake-policy-review/
 └── SKILL.md                   # marketplace and AI-assisted-development policy review
+tool-verification/
+├── SKILL.md                   # repository URL to Verified readiness assessment
+└── references/
+    ├── checklist.md           # evidence workflow for all maturity criteria
+    └── reviewer-response.md   # reviewer decision guidance and response templates
 tool-dev/
 ├── SKILL.md                   # shared Claude + Copilot + Codex entry point
 └── references/
