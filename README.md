@@ -25,6 +25,7 @@ Once the skills are deployed (see [Deploying](#deploying)), just ask your agent 
 
 ## Prerequisites
 
+- **For `npx` installation:** Node.js 22.20 or later, npm (which includes `npx`), and access to this GitHub repository. This is the current requirement of the [Vercel Labs skills CLI](https://github.com/vercel-labs/skills). Manual copying does not require Node.js.
 - **Node.js + npm** — the development workflow runs `yo`, `generator-pptb`, `@pptb/types` (which provides the `pptb-validate` CLI), and `npm publish`. None of these are installed by the skill itself; the agent installs them per-project as it works through the steps in `tool-dev/SKILL.md`.
 - **PPTB desktop app** installed locally if you want to exercise the Step 5 debug loop (`dev-watch` → Load Local Tool) — not required just to scaffold or validate a tool.
 - **Claude Code / Cowork**, **GitHub Copilot**, or **OpenAI Codex** with project or repo skills enabled, so the deployed `SKILL.md` actually gets picked up.
@@ -33,9 +34,77 @@ Once the skills are deployed (see [Deploying](#deploying)), just ask your agent 
 
 ## Deploying
 
+### Recommended: install with `npx skills`
+
+Run this from the **target project root**, not from this skills source repository:
+
+```sh
+npx skills add PowerPlatformToolBox/pptb-agent-skills
+```
+
+Accept npm's prompt to download the `skills` CLI if shown, then select the skills, coding agents, and installation method in the interactive prompts. Installation is project-local by default. The CLI installs the selected skill folders, including their reference files; it does not scaffold a PPTB tool or install the tool-development dependencies.
+
+List available skills without installing:
+
+```sh
+npx skills add PowerPlatformToolBox/pptb-agent-skills --list
+```
+
+The expected skill names are `pptb-tool-dev`, `intake-policy-review`, and `tool-verification`. These identifiers come from each skill's YAML `name`, not necessarily its source folder name (`tool-dev/` contains `pptb-tool-dev`).
+
+To install all three skills for one agent, choose the appropriate command:
+
+```sh
+# GitHub Copilot
+npx skills add PowerPlatformToolBox/pptb-agent-skills --skill '*' --agent github-copilot
+
+# Claude Code
+npx skills add PowerPlatformToolBox/pptb-agent-skills --skill '*' --agent claude-code
+
+# OpenAI Codex
+npx skills add PowerPlatformToolBox/pptb-agent-skills --skill '*' --agent codex
+```
+
+To install only one skill:
+
+```sh
+npx skills add PowerPlatformToolBox/pptb-agent-skills --skill pptb-tool-dev --agent github-copilot
+```
+
+Add `--global` to install for your user across projects rather than in the current project. Add `--copy` if you prefer independent copies instead of symlinks. The CLI chooses the supported skill location for each agent; these locations can differ from the manual-copy paths below. See the [supported agents and paths](https://github.com/vercel-labs/skills/blob/main/docs/agents.md).
+
+Confirm project-local installation and manage updates:
+
+```sh
+npx skills list
+npx skills check
+npx skills update
+```
+
+The update command updates installed skills, not just those from this repository. Review changes before using updated instructions. See the [CLI reference](https://github.com/vercel-labs/skills/blob/main/docs/commands.md) for scope and individual-skill update options.
+
+### Maintainer setup: GitHub, not Vercel hosting
+
+`npx skills` is a **Vercel Labs CLI**, not a Vercel deployment. It downloads the CLI from npm and reads these skills from GitHub. This repository does not need a Vercel account, website, `vercel.json`, build command, or its own npm package.
+
+To make the installation command available:
+
+1. Keep the skill folders and their reference files in this GitHub repository, with valid `name` and `description` frontmatter in each `SKILL.md`. The CLI supports the existing layout through its recursive discovery fallback when no skills are found in standard container directories.
+2. Commit and push intended skill/documentation changes to the repository's default branch. Public installation requires public repository access; private repositories require the installer's configured Git authentication.
+3. Run `npx skills add PowerPlatformToolBox/pptb-agent-skills --list` and confirm that all three skill names above are listed.
+4. From a separate test project, run the installation command, select your agent, and use `npx skills list` to confirm installation before trying the example prompts in [Try it](#try-it).
+5. Share the installation command. Push later skill changes to GitHub; existing users can check for and install updates using the commands above.
+
+There is no Vercel dashboard setup or hosting configuration for this approach. See [creating and sharing skills](https://github.com/vercel-labs/skills/blob/main/docs/creating-skills.md) for the upstream format and discovery rules.
+
+### Alternative: copy skills manually
+
+Clone or download this repository, then run the following from its root. Replace `<project>` or `<repo>` with the destination project path before running the commands. Create the destination skills directory first. If a skill is already installed there, reconcile its contents instead of blindly copying over it.
+
 **Claude** (Claude Code / Cowork project skills):
 
 ```sh
+mkdir -p <project>/.claude/skills
 cp -r tool-dev/ <project>/.claude/skills/pptb-tool-dev/
 cp -r intake-policy-review/ <project>/.claude/skills/intake-policy-review/
 cp -r tool-verification/ <project>/.claude/skills/tool-verification/
@@ -44,6 +113,7 @@ cp -r tool-verification/ <project>/.claude/skills/tool-verification/
 **GitHub Copilot** (VS Code, Copilot CLI, Copilot cloud agent):
 
 ```sh
+mkdir -p <repo>/.github/skills
 cp -r tool-dev/ <repo>/.github/skills/pptb-tool-dev/
 cp -r intake-policy-review/ <repo>/.github/skills/intake-policy-review/
 cp -r tool-verification/ <repo>/.github/skills/tool-verification/
@@ -58,7 +128,7 @@ cp -r intake-policy-review/ <repo>/.agents/skills/intake-policy-review/
 cp -r tool-verification/ <repo>/.agents/skills/tool-verification/
 ```
 
-Copy whichever skills you need, including each skill's `references/` directory when present. Each skill uses the same folder and `SKILL.md` for all three agents, read directly from their respective skill locations. The copy commands above use POSIX shell syntax (for example, Bash or Git Bash).
+Copy whichever skills you need, including each skill's `references/` directory when present. Each skill uses the same folder and `SKILL.md` for all three agents, read directly from their respective skill locations. The copy commands above use POSIX shell syntax (for example, Bash or Git Bash). Manually copied skills are not managed by the CLI's update command; pull or download source changes and reconcile the destination copies yourself. Use either CLI installation or manual copying for a given skill/agent to avoid duplicate installations.
 
 ## Using this in the tool generator
 
